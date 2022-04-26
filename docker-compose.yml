@@ -15,9 +15,10 @@ services:
       context: ./api
       args:
         WORKDIR: $WORKDIR
-    command: /bin/sh -c "rm -f tmp/pids/server.pid"
+    # command: bash -c "rm -f tmp/pids/server.pid"
     environment:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      API_DOMAIN: "localhost:$FRONT_PORT"
     volumes:
       - ./api:/$WORKDIR
     depends_on:
@@ -26,12 +27,14 @@ services:
       - "$API_PORT:$CONTAINER_PORT"
     init: true
 
+
   front:
     build:
       context: ./front
       args:
         WORKDIR: $WORKDIR
         CONTAINER_PORT: $CONTAINER_PORT
+        API_URL: "http://localhost:$API_PORT"
     command: yarn run dev
     volumes:
       - ./front:/$WORKDIR
